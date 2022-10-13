@@ -32,7 +32,8 @@ def generate_includes(p: Panel, options: Options) -> str:
 	if p.backlight == BacklightControl.DCS:
 		includes['linux'].add('backlight.h')
 	if p.has_dsc:
-		includes['drm'].add('drm_dsc.h')
+		includes['drm'].add('display/drm_dsc.h')
+		includes['drm'].add('display/drm_dsc_helper.h')
 
 	for cmd in p.cmds.values():
 		if 'MIPI_DCS_' in cmd.generated:
@@ -244,7 +245,7 @@ static int {p.short_id}_prepare(struct drm_panel *panel)
 
 		ret = mipi_dsi_picture_parameter_set(ctx->dsi, &pps);
 		if (ret < 0) {
-			dev_err(panel->dev, "failed to set pps: %d\n", ret);
+			dev_err(panel->dev, "failed to set pps: %d\\n", ret);
 			return ret;
 		}
 		msleep(28); /* TODO: Is this panel-dependent? */
@@ -255,6 +256,7 @@ static int {p.short_id}_prepare(struct drm_panel *panel)
 	ctx->prepared = true;
 
 	return 0;
+}
 '''
 	return s
 
@@ -568,7 +570,7 @@ static const struct drm_panel_funcs {p.short_id}_panel_funcs = {{
 }};
 
 {generate_backlight(p, options)}{generate_probe(p, options)}
-static int {p.short_id}_remove(struct mipi_dsi_device *dsi)
+static void {p.short_id}_remove(struct mipi_dsi_device *dsi)
 {{
 	struct {p.short_id} *ctx = mipi_dsi_get_drvdata(dsi);
 	int ret;
@@ -579,7 +581,7 @@ static int {p.short_id}_remove(struct mipi_dsi_device *dsi)
 
 	drm_panel_remove(&ctx->panel);
 
-	return 0;
+	return;
 }}
 
 static const struct of_device_id {p.short_id}_of_match[] = {{

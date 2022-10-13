@@ -218,6 +218,11 @@ def _generate_peripheral(t: Transaction, payload: bytes, options: Options) -> st
 	else:
 		raise ValueError(t)
 
+def _generate_dsc(t: Transaction, payload: bytes, options: Options) -> str:
+	if t != Transaction.DCS_COMPRESSION_MODE:
+		raise ValueError(t)
+	
+	return _generate_checked_call('mipi_dsi_compression_mode', ['dsi', 'true'], t.description)
 
 def _generate_ignore(t: Transaction, payload: bytes, options: Options) -> str:
 	print(f"WARNING: Ignoring weird {t.name}")
@@ -254,7 +259,7 @@ class Transaction(Enum):
 
 	DCS_READ = 0x06,
 
-	DCS_COMPRESSION_MODE = 0x07,
+	DCS_COMPRESSION_MODE = 0x07, 1, _generate_dsc
 	PPS_LONG_WRITE = 0x0A,
 
 	SET_MAXIMUM_RETURN_PACKET_SIZE = 0x37, -1, _generate_ignore
