@@ -462,7 +462,7 @@ static int {p.short_id}_probe(struct mipi_dsi_device *dsi)
 
 	dsc->slice_height = {p.dsc_slice_height};
 	dsc->slice_width = {p.dsc_slice_width};
-	dsc->slice_count = 1; // TODO: fix this value
+	dsc->slice_count = {p.dsc_slice_per_pkt};
 	dsc->bits_per_component = {p.dsc_bit_per_component};
 	dsc->bits_per_pixel = {p.dsc_bit_per_pixel};
 	dsc->block_pred_enable = {"true" if p.dsc_dsc_block_prediction else "false"};
